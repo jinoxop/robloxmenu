@@ -1,5 +1,5 @@
 -- =====================================================
--- Jinoxx V4 - القائمة الأسطورية (Panel القابلة للتحريك)
+-- Jinoxx V5 - القائمة الأفقية (Horizontal Panel)
 -- =====================================================
 
 local player = game.Players.LocalPlayer
@@ -20,6 +20,8 @@ local settings = {
     noclip = { enabled = false },
     reach = { enabled = false, value = 10 },
     infiniteJump = { enabled = false },
+    silentAim = { enabled = false },
+    triggerBot = { enabled = false },
 }
 
 local currentTarget = nil
@@ -28,6 +30,7 @@ local guiVisible = true
 local isDragging = false
 local dragStart = nil
 local dragStartPos = nil
+local dragType = nil -- "move" or "resize"
 
 -- =====================================================
 -- نظام ESP المتطور
@@ -104,15 +107,15 @@ local function createESP(playerObj)
     end
     
     -- Billboard Info
-    if espSystem.showName or espSystem.showDistance or espSystem.showHealth or espSystem.showArmor or espSystem.showWeapon then
+    if espSystem.showName or espSystem.showDistance or espSystem.showHealth then
         local billboard = Instance.new("BillboardGui")
-        billboard.Size = UDim2.new(0, 300, 0, 100)
+        billboard.Size = UDim2.new(0, 300, 0, 80)
         billboard.Adornee = root
         billboard.AlwaysOnTop = true
         billboard.Parent = coreGui
         
         local mainLabel = Instance.new("TextLabel")
-        mainLabel.Size = UDim2.new(1, 0, 0.4, 0)
+        mainLabel.Size = UDim2.new(1, 0, 0.5, 0)
         mainLabel.BackgroundTransparency = 1
         mainLabel.TextColor3 = espColor
         mainLabel.TextScaled = true
@@ -131,45 +134,24 @@ local function createESP(playerObj)
         end
         mainLabel.Text = infoText
         
-        local extraLabel = Instance.new("TextLabel")
-        extraLabel.Size = UDim2.new(1, 0, 0.3, 0)
-        extraLabel.Position = UDim2.new(0, 0, 0.4, 0)
-        extraLabel.BackgroundTransparency = 1
-        extraLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-        extraLabel.TextScaled = true
-        extraLabel.Font = Enum.Font.Gotham
-        extraLabel.TextXAlignment = Enum.TextXAlignment.Center
-        extraLabel.Parent = billboard
+        local healthLabel = Instance.new("TextLabel")
+        healthLabel.Size = UDim2.new(1, 0, 0.3, 0)
+        healthLabel.Position = UDim2.new(0, 0, 0.5, 0)
+        healthLabel.BackgroundTransparency = 1
+        healthLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+        healthLabel.TextScaled = true
+        healthLabel.Font = Enum.Font.Gotham
+        healthLabel.TextXAlignment = Enum.TextXAlignment.Center
+        healthLabel.Parent = billboard
         
-        local extraText = ""
         if espSystem.showHealth then
-            extraText = extraText .. "❤️ " .. math.floor(humanoid.Health) .. "/" .. math.floor(humanoid.MaxHealth)
+            healthLabel.Text = "❤️ " .. math.floor(humanoid.Health) .. "/" .. math.floor(humanoid.MaxHealth)
         end
-        if espSystem.showArmor then
-            local armor = 0
-            for _, item in ipairs(character:GetChildren()) do
-                if item:IsA("Accessory") or item:IsA("Tool") then
-                    armor = armor + 10
-                end
-            end
-            extraText = extraText .. (extraText ~= "" and " | " or "") .. "🛡️ " .. armor
-        end
-        if espSystem.showWeapon then
-            local weapon = "None"
-            for _, tool in ipairs(character:GetChildren()) do
-                if tool:IsA("Tool") then
-                    weapon = tool.Name
-                    break
-                end
-            end
-            extraText = extraText .. (extraText ~= "" and " | " or "") .. "🔫 " .. weapon
-        end
-        extraLabel.Text = extraText
         
         -- Health Bar
         local healthBarBg = Instance.new("Frame")
         healthBarBg.Size = UDim2.new(0.8, 0, 0.08, 0)
-        healthBarBg.Position = UDim2.new(0.1, 0, 0.75, 0)
+        healthBarBg.Position = UDim2.new(0.1, 0, 0.78, 0)
         healthBarBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
         healthBarBg.BackgroundTransparency = 0.5
         healthBarBg.BorderSizePixel = 0
@@ -229,19 +211,19 @@ players.PlayerAdded:Connect(function() wait(0.5) if espSystem.enabled then updat
 players.PlayerRemoving:Connect(function() wait(0.5) if espSystem.enabled then updateESP() end end)
 
 -- =====================================================
--- إنشاء القائمة الأسطورية (Panel القابلة للتحريك)
+-- إنشاء القائمة الأفقية (Horizontal Panel)
 -- =====================================================
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "JinoxxV4"
+screenGui.Name = "JinoxxV5"
 screenGui.Parent = player.PlayerGui
 screenGui.ResetOnSpawn = false
 
--- الإطار الرئيسي (Panel)
+-- الإطار الرئيسي (عرضي)
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 420, 0, 540)
-frame.Position = UDim2.new(0.5, -210, 0.5, -270)
+frame.Size = UDim2.new(0, 700, 0, 160)
+frame.Position = UDim2.new(0.5, -350, 0.85, -80)
 frame.BackgroundColor3 = Color3.fromRGB(8, 8, 20)
-frame.BackgroundTransparency = 0.1
+frame.BackgroundTransparency = 0.05
 frame.BorderSizePixel = 0
 frame.ClipsDescendants = true
 frame.Parent = screenGui
@@ -262,7 +244,7 @@ local glassCorner = Instance.new("UICorner")
 glassCorner.CornerRadius = UDim.new(0, 20)
 glassCorner.Parent = glassEffect
 
--- حدود نيون متحركة (تأثير السايبر)
+-- حدود نيون متحركة
 local neonBorder = Instance.new("Frame")
 neonBorder.Size = UDim2.new(1, 0, 1, 0)
 neonBorder.BackgroundTransparency = 1
@@ -275,7 +257,7 @@ borderCorner.Parent = neonBorder
 
 -- ===== شريط العنوان (قابل للسحب) =====
 local titleBar = Instance.new("Frame")
-titleBar.Size = UDim2.new(1, 0, 0, 55)
+titleBar.Size = UDim2.new(1, 0, 0, 40)
 titleBar.Position = UDim2.new(0, 0, 0, 0)
 titleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 50)
 titleBar.BackgroundTransparency = 0.3
@@ -285,39 +267,38 @@ local titleCorner = Instance.new("UICorner")
 titleCorner.CornerRadius = UDim.new(0, 20)
 titleCorner.Parent = titleBar
 
--- اسم البرنامج مع أيقونة
+-- اسم البرنامج
 local titleText = Instance.new("TextLabel")
-titleText.Size = UDim2.new(1, -80, 1, 0)
+titleText.Size = UDim2.new(0.3, 0, 1, 0)
 titleText.Position = UDim2.new(0, 15, 0, 0)
-titleText.Text = "⚡ JINoxx V4"
+titleText.Text = "🔥 JINoxx V5"
 titleText.TextColor3 = Color3.fromRGB(255, 0, 150)
 titleText.BackgroundTransparency = 1
 titleText.Font = Enum.Font.GothamBold
-titleText.TextSize = 24
+titleText.TextSize = 18
 titleText.TextXAlignment = Enum.TextXAlignment.Left
 titleText.Parent = titleBar
 
--- إشارة السحب (ثلاث خطوط صغيرة)
+-- إشارة السحب
 local dragHandle = Instance.new("TextLabel")
-dragHandle.Size = UDim2.new(0, 30, 0, 20)
-dragHandle.Position = UDim2.new(1, -80, 0, 18)
-dragHandle.Text = "≡"
+dragHandle.Size = UDim2.new(0, 40, 0, 20)
+dragHandle.Position = UDim2.new(0.35, 0, 0, 10)
+dragHandle.Text = "⠿"
 dragHandle.TextColor3 = Color3.fromRGB(150, 150, 200)
 dragHandle.BackgroundTransparency = 1
 dragHandle.Font = Enum.Font.Gotham
-dragHandle.TextSize = 22
-dragHandle.TextXAlignment = Enum.TextXAlignment.Center
+dragHandle.TextSize = 20
 dragHandle.Parent = titleBar
 
 -- زر الإغلاق
 local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.new(0, 38, 0, 38)
-closeBtn.Position = UDim2.new(1, -48, 0, 8)
+closeBtn.Size = UDim2.new(0, 35, 0, 35)
+closeBtn.Position = UDim2.new(1, -42, 0, 2)
 closeBtn.Text = "✕"
 closeBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
 closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 closeBtn.Font = Enum.Font.GothamBold
-closeBtn.TextSize = 18
+closeBtn.TextSize = 16
 closeBtn.BorderSizePixel = 0
 closeBtn.Parent = titleBar
 local closeCorner = Instance.new("UICorner")
@@ -366,25 +347,24 @@ titleBar.InputEnded:Connect(function(input)
     end
 end)
 
--- تحديث السحب عند تحريك الفأرة
 mouse.Move:Connect(function()
     updateDrag()
 end)
 
--- زر إظهار القائمة (يظهر عند الإغلاق)
+-- زر إظهار القائمة
 local showMenuBtn = Instance.new("TextButton")
-showMenuBtn.Size = UDim2.new(0, 150, 0, 42)
-showMenuBtn.Position = UDim2.new(0.5, -75, 0, 20)
-showMenuBtn.Text = "⚡ Open Panel"
+showMenuBtn.Size = UDim2.new(0, 130, 0, 35)
+showMenuBtn.Position = UDim2.new(0.5, -65, 0, 10)
+showMenuBtn.Text = "⚡ Open"
 showMenuBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 50)
 showMenuBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 showMenuBtn.Font = Enum.Font.GothamBold
-showMenuBtn.TextSize = 16
+showMenuBtn.TextSize = 14
 showMenuBtn.BorderSizePixel = 0
 showMenuBtn.Visible = false
 showMenuBtn.Parent = screenGui
 local showCorner = Instance.new("UICorner")
-showCorner.CornerRadius = UDim.new(0, 12)
+showCorner.CornerRadius = UDim.new(0, 10)
 showCorner.Parent = showMenuBtn
 
 showMenuBtn.MouseButton1Click:Connect(function()
@@ -394,159 +374,183 @@ showMenuBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =====================================================
--- إنشاء الأزرار (تصميم Panel احترافي)
+-- إنشاء الأزرار (ترتيب أفقي)
 -- =====================================================
-local function createButton(text, yPos, icon)
+local function createButton(text, xPos, icon)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0.85, 0, 0, 40)
-    btn.Position = UDim2.new(0.075, 0, yPos, 0)
-    btn.Text = icon .. " " .. text .. ": OFF"
+    btn.Size = UDim2.new(0, 80, 0, 80)
+    btn.Position = UDim2.new(0, xPos, 0, 45)
+    btn.Text = icon .. "\n" .. text
     btn.BackgroundColor3 = Color3.fromRGB(30, 30, 55)
     btn.TextColor3 = Color3.fromRGB(220, 220, 220)
     btn.Font = Enum.Font.Gotham
-    btn.TextSize = 14
+    btn.TextSize = 11
     btn.BorderSizePixel = 0
     btn.Parent = frame
     local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 10)
+    btnCorner.CornerRadius = UDim.new(0, 12)
     btnCorner.Parent = btn
     return btn
 end
 
--- أزرار الميزات
-local aimbotBtn = createButton("Aimbot", 0.13, "🎯")
-local espBtn = createButton("ESP", 0.22, "👁️")
-local jumpBtn = createButton("Infinite Jump", 0.31, "⬆️")
-local speedBtn = createButton("Speed", 0.40, "💨")
-local flyBtn = createButton("Fly", 0.49, "🕊️")
-local noclipBtn = createButton("Noclip", 0.58, "🚪")
-local reachBtn = createButton("Reach", 0.67, "⚔️")
+-- أزرار الميزات (مرتبة أفقياً)
+local btnWidth = 80
+local startX = 85
+local gap = 15
 
--- أزرار التحكم
-local resetSpeedBtn = Instance.new("TextButton")
-resetSpeedBtn.Size = UDim2.new(0.25, 0, 0, 30)
-resetSpeedBtn.Position = UDim2.new(0.05, 0, 0.78, 0)
-resetSpeedBtn.Text = "↺ Reset"
-resetSpeedBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
-resetSpeedBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-resetSpeedBtn.Font = Enum.Font.Gotham
-resetSpeedBtn.TextSize = 12
-resetSpeedBtn.BorderSizePixel = 0
-resetSpeedBtn.Parent = frame
-local resetCorner = Instance.new("UICorner")
-resetCorner.CornerRadius = UDim.new(0, 8)
-resetCorner.Parent = resetSpeedBtn
-
-resetSpeedBtn.MouseButton1Click:Connect(function()
-    if player.Character and player.Character:FindFirstChild("Humanoid") then
-        player.Character.Humanoid.WalkSpeed = 16
-        settings.speed.value = 16
-        speedSliderBtn.Text = "Speed: 16"
-    end
-end)
-
-local speedSliderBtn = Instance.new("TextButton")
-speedSliderBtn.Size = UDim2.new(0.35, 0, 0, 30)
-speedSliderBtn.Position = UDim2.new(0.35, 0, 0.78, 0)
-speedSliderBtn.Text = "Speed: " .. settings.speed.value
-speedSliderBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
-speedSliderBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-speedSliderBtn.Font = Enum.Font.Gotham
-speedSliderBtn.TextSize = 12
-speedSliderBtn.BorderSizePixel = 0
-speedSliderBtn.Parent = frame
-local sliderCorner = Instance.new("UICorner")
-sliderCorner.CornerRadius = UDim.new(0, 8)
-sliderCorner.Parent = speedSliderBtn
-
-speedSliderBtn.MouseButton1Click:Connect(function()
-    if settings.speed.value < 200 then
-        settings.speed.value = settings.speed.value + 10
-    else
-        settings.speed.value = 10
-    end
-    speedSliderBtn.Text = "Speed: " .. settings.speed.value
-    if settings.speed.enabled and player.Character and player.Character:FindFirstChild("Humanoid") then
-        player.Character.Humanoid.WalkSpeed = settings.speed.value
-    end
-end)
-
--- زر إغلاق كامل (Hide)
-local hideAllBtn = Instance.new("TextButton")
-hideAllBtn.Size = UDim2.new(0.2, 0, 0, 30)
-hideAllBtn.Position = UDim2.new(0.75, 0, 0.78, 0)
-hideAllBtn.Text = "Hide All"
-hideAllBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-hideAllBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-hideAllBtn.Font = Enum.Font.Gotham
-hideAllBtn.TextSize = 12
-hideAllBtn.BorderSizePixel = 0
-hideAllBtn.Parent = frame
-local hideCorner = Instance.new("UICorner")
-hideCorner.CornerRadius = UDim.new(0, 8)
-hideCorner.Parent = hideAllBtn
-
-hideAllBtn.MouseButton1Click:Connect(function()
-    guiVisible = false
-    frame.Visible = false
-    showMenuBtn.Visible = true
-end)
+local aimbotBtn = createButton("Aimbot", startX + (btnWidth + gap) * 0, "🎯")
+local espBtn = createButton("ESP", startX + (btnWidth + gap) * 1, "👁️")
+local jumpBtn = createButton("Jump", startX + (btnWidth + gap) * 2, "⬆️")
+local speedBtn = createButton("Speed", startX + (btnWidth + gap) * 3, "💨")
+local flyBtn = createButton("Fly", startX + (btnWidth + gap) * 4, "🕊️")
+local noclipBtn = createButton("Noclip", startX + (btnWidth + gap) * 5, "🚪")
+local reachBtn = createButton("Reach", startX + (btnWidth + gap) * 6, "⚔️")
 
 -- =====================================================
 -- وظائف الأزرار
 -- =====================================================
+local function toggleButton(btn, setting, text)
+    setting = not setting
+    btn.BackgroundColor3 = setting and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(30, 30, 55)
+    btn.TextColor3 = setting and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(220, 220, 220)
+    return setting
+end
+
 aimbotBtn.MouseButton1Click:Connect(function()
-    settings.aimbot.enabled = not settings.aimbot.enabled
-    aimbotBtn.Text = settings.aimbot.enabled and "🎯 Aimbot: ON" or "🎯 Aimbot: OFF"
-    aimbotBtn.BackgroundColor3 = settings.aimbot.enabled and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(30, 30, 55)
+    settings.aimbot.enabled = toggleButton(aimbotBtn, settings.aimbot.enabled, "Aimbot")
+    aimbotBtn.Text = settings.aimbot.enabled and "🎯\nON" or "🎯\nAimbot"
 end)
 
 espBtn.MouseButton1Click:Connect(function()
     if espSystem.enabled then
         stopESP()
-        espBtn.Text = "👁️ ESP: OFF"
         espBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 55)
+        espBtn.Text = "👁️\nESP"
     else
         startESP()
-        espBtn.Text = "👁️ ESP: ON"
         espBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+        espBtn.Text = "👁️\nON"
     end
 end)
 
 jumpBtn.MouseButton1Click:Connect(function()
-    settings.infiniteJump.enabled = not settings.infiniteJump.enabled
-    jumpBtn.Text = settings.infiniteJump.enabled and "⬆️ Infinite Jump: ON" or "⬆️ Infinite Jump: OFF"
-    jumpBtn.BackgroundColor3 = settings.infiniteJump.enabled and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(30, 30, 55)
+    settings.infiniteJump.enabled = toggleButton(jumpBtn, settings.infiniteJump.enabled, "Jump")
+    jumpBtn.Text = settings.infiniteJump.enabled and "⬆️\nON" or "⬆️\nJump"
 end)
 
 speedBtn.MouseButton1Click:Connect(function()
-    settings.speed.enabled = not settings.speed.enabled
-    speedBtn.Text = settings.speed.enabled and "💨 Speed: ON" or "💨 Speed: OFF"
-    speedBtn.BackgroundColor3 = settings.speed.enabled and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(30, 30, 55)
+    settings.speed.enabled = toggleButton(speedBtn, settings.speed.enabled, "Speed")
+    speedBtn.Text = settings.speed.enabled and "💨\nON" or "💨\nSpeed"
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         player.Character.Humanoid.WalkSpeed = settings.speed.enabled and settings.speed.value or 16
     end
 end)
 
 flyBtn.MouseButton1Click:Connect(function()
-    settings.fly.enabled = not settings.fly.enabled
-    flyBtn.Text = settings.fly.enabled and "🕊️ Fly: ON" or "🕊️ Fly: OFF"
-    flyBtn.BackgroundColor3 = settings.fly.enabled and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(30, 30, 55)
+    settings.fly.enabled = toggleButton(flyBtn, settings.fly.enabled, "Fly")
+    flyBtn.Text = settings.fly.enabled and "🕊️\nON" or "🕊️\nFly"
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         player.Character.Humanoid.PlatformStand = settings.fly.enabled
     end
 end)
 
 noclipBtn.MouseButton1Click:Connect(function()
-    settings.noclip.enabled = not settings.noclip.enabled
-    noclipBtn.Text = settings.noclip.enabled and "🚪 Noclip: ON" or "🚪 Noclip: OFF"
-    noclipBtn.BackgroundColor3 = settings.noclip.enabled and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(30, 30, 55)
+    settings.noclip.enabled = toggleButton(noclipBtn, settings.noclip.enabled, "Noclip")
+    noclipBtn.Text = settings.noclip.enabled and "🚪\nON" or "🚪\nNoclip"
 end)
 
 reachBtn.MouseButton1Click:Connect(function()
-    settings.reach.enabled = not settings.reach.enabled
-    reachBtn.Text = settings.reach.enabled and "⚔️ Reach: ON" or "⚔️ Reach: OFF"
-    reachBtn.BackgroundColor3 = settings.reach.enabled and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(30, 30, 55)
+    settings.reach.enabled = toggleButton(reachBtn, settings.reach.enabled, "Reach")
+    reachBtn.Text = settings.reach.enabled and "⚔️\nON" or "⚔️\nReach"
+end)
+
+-- =====================================================
+-- أزرار التحكم الإضافية
+-- =====================================================
+-- زر ضبط السرعة (+)
+local speedUpBtn = Instance.new("TextButton")
+speedUpBtn.Size = UDim2.new(0, 30, 0, 30)
+speedUpBtn.Position = UDim2.new(0, startX + (btnWidth + gap) * 7 + 10, 0, 45)
+speedUpBtn.Text = "+"
+speedUpBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+speedUpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedUpBtn.Font = Enum.Font.GothamBold
+speedUpBtn.TextSize = 18
+speedUpBtn.BorderSizePixel = 0
+speedUpBtn.Parent = frame
+local speedUpCorner = Instance.new("UICorner")
+speedUpCorner.CornerRadius = UDim.new(0, 8)
+speedUpCorner.Parent = speedUpBtn
+
+speedUpBtn.MouseButton1Click:Connect(function()
+    if settings.speed.value < 200 then
+        settings.speed.value = settings.speed.value + 10
+    else
+        settings.speed.value = 10
+    end
+    if settings.speed.enabled and player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.WalkSpeed = settings.speed.value
+    end
+end)
+
+-- زر ضبط السرعة (-)
+local speedDownBtn = Instance.new("TextButton")
+speedDownBtn.Size = UDim2.new(0, 30, 0, 30)
+speedDownBtn.Position = UDim2.new(0, startX + (btnWidth + gap) * 7 + 45, 0, 45)
+speedDownBtn.Text = "-"
+speedDownBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+speedDownBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedDownBtn.Font = Enum.Font.GothamBold
+speedDownBtn.TextSize = 18
+speedDownBtn.BorderSizePixel = 0
+speedDownBtn.Parent = frame
+local speedDownCorner = Instance.new("UICorner")
+speedDownCorner.CornerRadius = UDim.new(0, 8)
+speedDownCorner.Parent = speedDownBtn
+
+speedDownBtn.MouseButton1Click:Connect(function()
+    if settings.speed.value > 10 then
+        settings.speed.value = settings.speed.value - 10
+    else
+        settings.speed.value = 200
+    end
+    if settings.speed.enabled and player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.WalkSpeed = settings.speed.value
+    end
+end)
+
+-- عرض السرعة الحالية
+local speedDisplay = Instance.new("TextLabel")
+speedDisplay.Size = UDim2.new(0, 50, 0, 20)
+speedDisplay.Position = UDim2.new(0, startX + (btnWidth + gap) * 7 + 20, 0, 80)
+speedDisplay.Text = settings.speed.value
+speedDisplay.TextColor3 = Color3.fromRGB(200, 200, 255)
+speedDisplay.BackgroundTransparency = 1
+speedDisplay.Font = Enum.Font.GothamBold
+speedDisplay.TextSize = 14
+speedDisplay.Parent = frame
+
+-- زر إعادة التعيين
+local resetBtn = Instance.new("TextButton")
+resetBtn.Size = UDim2.new(0, 50, 0, 25)
+resetBtn.Position = UDim2.new(0, startX + (btnWidth + gap) * 7 + 10, 0, 105)
+resetBtn.Text = "↺"
+resetBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+resetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+resetBtn.Font = Enum.Font.GothamBold
+resetBtn.TextSize = 16
+resetBtn.BorderSizePixel = 0
+resetBtn.Parent = frame
+local resetCorner = Instance.new("UICorner")
+resetCorner.CornerRadius = UDim.new(0, 8)
+resetCorner.Parent = resetBtn
+
+resetBtn.MouseButton1Click:Connect(function()
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.WalkSpeed = 16
+        settings.speed.value = 16
+        speedDisplay.Text = "16"
+    end
 end)
 
 -- =====================================================
@@ -635,8 +639,8 @@ end)
 -- =====================================================
 -- رسالة التحميل
 -- =====================================================
-print("✅ Jinoxx V4 - Panel Loaded Successfully!")
-print("🔥 يمكنك سحب القائمة من شريط العنوان")
+print("✅ Jinoxx V5 - Horizontal Panel Loaded Successfully!")
+print("🔥 قائمة أفقية احترافية قابلة للسحب")
 print("🔄 اضغط Tab لإظهار/إخفاء القائمة")
 
 -- =====================================================
