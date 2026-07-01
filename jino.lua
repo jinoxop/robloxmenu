@@ -1,5 +1,5 @@
 -- =====================================================
--- Jinoxx V5 - القائمة الأفقية (Horizontal Panel)
+-- Jinoxx V5.2 - القائمة الأفقية (نظام سحب مثالي)
 -- =====================================================
 
 local player = game.Players.LocalPlayer
@@ -20,8 +20,6 @@ local settings = {
     noclip = { enabled = false },
     reach = { enabled = false, value = 10 },
     infiniteJump = { enabled = false },
-    silentAim = { enabled = false },
-    triggerBot = { enabled = false },
 }
 
 local currentTarget = nil
@@ -30,7 +28,7 @@ local guiVisible = true
 local isDragging = false
 local dragStart = nil
 local dragStartPos = nil
-local dragType = nil -- "move" or "resize"
+local dragConnection = nil
 
 -- =====================================================
 -- نظام ESP المتطور
@@ -311,33 +309,38 @@ closeBtn.MouseButton1Click:Connect(function()
     showMenuBtn.Visible = true
 end)
 
--- ===== نظام السحب (Drag & Drop) =====
-local function startDrag()
+-- ===== نظام السحب المحسّن (يعمل على أي جزء من القائمة) =====
+local function startDrag(input)
     isDragging = true
-    dragStart = Vector2.new(mouse.X, mouse.Y)
+    dragStart = Vector2.new(input.Position.X, input.Position.Y)
     dragStartPos = frame.Position
+    
+    -- ربط تحديث السحب
+    dragConnection = mouse.Move:Connect(function()
+        if not isDragging then return end
+        local delta = Vector2.new(mouse.X, mouse.Y) - dragStart
+        local newPos = UDim2.new(
+            dragStartPos.X.Scale,
+            dragStartPos.X.Offset + delta.X,
+            dragStartPos.Y.Scale,
+            dragStartPos.Y.Offset + delta.Y
+        )
+        frame.Position = newPos
+    end)
 end
 
 local function stopDrag()
     isDragging = false
-end
-
-local function updateDrag()
-    if not isDragging then return end
-    local delta = Vector2.new(mouse.X, mouse.Y) - dragStart
-    local newPos = UDim2.new(
-        dragStartPos.X.Scale,
-        dragStartPos.X.Offset + delta.X,
-        dragStartPos.Y.Scale,
-        dragStartPos.Y.Offset + delta.Y
-    )
-    frame.Position = newPos
+    if dragConnection then
+        dragConnection:Disconnect()
+        dragConnection = nil
+    end
 end
 
 -- تطبيق السحب على شريط العنوان
 titleBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        startDrag()
+        startDrag(input)
     end
 end)
 
@@ -347,8 +350,17 @@ titleBar.InputEnded:Connect(function(input)
     end
 end)
 
-mouse.Move:Connect(function()
-    updateDrag()
+-- أيضاً على الإطار نفسه (بحيث يمكن السحب من أي مكان)
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 and not input.Target:IsA("TextButton") then
+        startDrag(input)
+    end
+end)
+
+frame.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        stopDrag()
+    end
 end)
 
 -- زر إظهار القائمة
@@ -639,8 +651,8 @@ end)
 -- =====================================================
 -- رسالة التحميل
 -- =====================================================
-print("✅ Jinoxx V5 - Horizontal Panel Loaded Successfully!")
-print("🔥 قائمة أفقية احترافية قابلة للسحب")
+print("✅ Jinoxx V5.2 - Horizontal Panel Loaded Successfully!")
+print("🔥 قائمة أفقية احترافية - اسحبها من أي مكان")
 print("🔄 اضغط Tab لإظهار/إخفاء القائمة")
 
 -- =====================================================
