@@ -2,7 +2,7 @@
 --//  JIN OXX ADMIN PANEL v5.0 (Compact Dark Purple)
 --//  Aimbot (mousemoverel) · Fly/Noclip/InfJump · ESP (Black-Purple)
 --//  Player TP/Fling · Anti-Fling · Tool loaders · Lucide icons
---//  Toggle panel: Click Top-Left Menu Icon
+--//  Toggle panel: Click "-" to minimize, click the floating square to restore
 --// ═══════════════════════════════════════════════════════════
 
 if game:GetService("CoreGui"):FindFirstChild("JinoxxAdmin") then game:GetService("CoreGui").JinoxxAdmin:Destroy() end
@@ -89,6 +89,22 @@ local hIcon=lucide(header,"zap",14,C.blue) hIcon.Position=UDim2.fromOffset(14,15
 local tlabel=Instance.new("TextLabel") tlabel.Size=UDim2.new(0.5,0,1,0) tlabel.Position=UDim2.fromOffset(34,0) tlabel.BackgroundTransparency=1 tlabel.Font=FONTB tlabel.Text="Jinoxx Admin" tlabel.TextColor3=C.text tlabel.TextSize=14 tlabel.TextXAlignment=Enum.TextXAlignment.Left tlabel.Parent=header
 local function hdrBtn(txt,xoff) local b=Instance.new("TextButton") b.Size=UDim2.fromOffset(28,28) b.Position=UDim2.new(1,xoff,0.5,-14) b.BackgroundColor3=C.hover b.BackgroundTransparency=1 b.Text=txt b.Font=FONTB b.TextSize=15 b.TextColor3=C.dim b.AutoButtonColor=false b.Parent=header corner(b,7) b.MouseEnter:Connect(function() b.BackgroundTransparency=0 b.TextColor3=C.text end) b.MouseLeave:Connect(function() b.BackgroundTransparency=1 b.TextColor3=C.dim end) return b end
 local closeBtn=hdrBtn("✕",-38) local minBtn=hdrBtn("—",-72)
+
+-- ** FLOATING SQUARE BUTTON (APPEARS WHEN MINIMIZED) **
+local miniIcon = Instance.new("TextButton")
+miniIcon.Size = UDim2.new(0, 45, 0, 45)
+miniIcon.Position = UDim2.new(1, -55, 0, 15)
+miniIcon.AnchorPoint = Vector2.new(1, 0)
+miniIcon.BackgroundColor3 = C.header
+miniIcon.Text = "☰"
+miniIcon.TextColor3 = Color3.fromRGB(130, 50, 200)
+miniIcon.Font = Enum.Font.GothamBold
+miniIcon.TextSize = 22
+miniIcon.Visible = false -- يظهر فقط عند التصغير
+miniIcon.Parent = gui
+corner(miniIcon, 10)
+strokeOf(miniIcon, C.border)
+
 local body=Instance.new("Frame") body.Size=UDim2.new(1,0,0,0) body.AutomaticSize=Enum.AutomaticSize.Y body.Position=UDim2.fromOffset(0,44) body.BackgroundTransparency=1 body.Parent=main
 local bpad=Instance.new("UIPadding") bpad.PaddingTop=UDim.new(0,10) bpad.PaddingBottom=UDim.new(0,10) bpad.PaddingLeft=UDim.new(0,6) bpad.PaddingRight=UDim.new(0,6) bpad.Parent=body
 local rowL=Instance.new("UIListLayout") rowL.FillDirection=Enum.FillDirection.Horizontal rowL.Padding=UDim.new(0,6) rowL.SortOrder=Enum.SortOrder.LayoutOrder rowL.VerticalAlignment=Enum.VerticalAlignment.Top rowL.Parent=body
@@ -162,24 +178,20 @@ task.spawn(function() for _=1,4 do RunService.Heartbeat:Wait() end local maxH=0 
 
 local function cleanup() stopFly() State.Noclip=false State.Aimbot=false State.ESP=false stopFling() for plr,_ in pairs(_G.JinoxxESP) do removeESP(plr) end end
 local minimized=false
-minBtn.MouseButton1Click:Connect(function() minimized=not minimized body.Visible=not minimized end)
-closeBtn.MouseButton1Click:Connect(function() cleanup() gui:Destroy() end)
 
--- ** MOBILE TOGGLE: Menu Button (≡) in top left **
-local toggleBtn = Instance.new("TextButton")
-toggleBtn.Size = UDim2.new(0, 44, 0, 44)
-toggleBtn.Position = UDim2.new(0, 10, 0, 10)
-toggleBtn.BackgroundColor3 = Color3.fromRGB(12, 8, 18)
-toggleBtn.Text = "☰"
-toggleBtn.TextColor3 = Color3.fromRGB(200, 180, 220)
-toggleBtn.Font = Enum.Font.GothamBold
-toggleBtn.TextSize = 22
-toggleBtn.Parent = gui
-corner(toggleBtn, 22)
-strokeOf(toggleBtn, Color3.fromRGB(35, 25, 45))
-
-toggleBtn.MouseButton1Click:Connect(function()
-    main.Visible = not main.Visible
+-- ** MINIMIZE / RESTORE LOGIC **
+minBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    main.Visible = not minimized
+    miniIcon.Visible = minimized
 end)
+
+miniIcon.MouseButton1Click:Connect(function()
+    minimized = false
+    main.Visible = true
+    miniIcon.Visible = false
+end)
+
+closeBtn.MouseButton1Click:Connect(function() cleanup() gui:Destroy() end)
 
 print("[Jinoxx] DarkPurple/Compact loaded | Lucide:"..tostring(LUCIDE~=nil).." Drawing:"..tostring(HAS_DRAW).." mousemove:"..tostring(HAS_MOUSEMOVE))
