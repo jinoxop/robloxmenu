@@ -1,14 +1,14 @@
 --// ═══════════════════════════════════════════════════════════
---//  OLEMAD ADMIN PANEL v5.0
+--//  JIN OXX ADMIN PANEL v5.0 (Mobile & Dark Purple)
 --//  Aimbot (mousemoverel) · Fly/Noclip/InfJump · ESP (Drawing)
 --//  Player TP/Fling · Anti-Fling · Tool loaders · Lucide icons
---//  Toggle panel: RightShift   |   Drag from the header
+--//  Toggle panel: Click Top-Left Menu Icon
 --// ═══════════════════════════════════════════════════════════
 
-if game:GetService("CoreGui"):FindFirstChild("OlemadAdmin") then game:GetService("CoreGui").OlemadAdmin:Destroy() end
-if _G.OlemadAdminConns then for _,c in pairs(_G.OlemadAdminConns) do pcall(function() c:Disconnect() end) end end
-if _G.OlemadESP then for _,o in pairs(_G.OlemadESP) do for _,d in pairs(o) do pcall(function() d:Remove() end) end end end
-_G.OlemadAdminConns={} _G.OlemadESP={}
+if game:GetService("CoreGui"):FindFirstChild("JinoxxAdmin") then game:GetService("CoreGui").JinoxxAdmin:Destroy() end
+if _G.JinoxxAdminConns then for _,c in pairs(_G.JinoxxAdminConns) do pcall(function() c:Disconnect() end) end end
+if _G.JinoxxESP then for _,o in pairs(_G.JinoxxESP) do for _,d in pairs(o) do pcall(function() d:Remove() end) end end end
+_G.JinoxxAdminConns={} _G.JinoxxESP={}
 local Players=game:GetService("Players") local RunService=game:GetService("RunService") local UIS=game:GetService("UserInputService") local GuiService=game:GetService("GuiService") local Workspace=game:GetService("Workspace") local TweenService=game:GetService("TweenService") local TeleportService=game:GetService("TeleportService") local LP=Players.LocalPlayer
 local mouseMove=rawget(getgenv and getgenv() or _G,"mousemoverel") or mousemoverel or mouse_move_relative
 local HAS_MOUSEMOVE=typeof(mouseMove)=="function"
@@ -17,7 +17,7 @@ local State={FlySpeed=50,WalkSpeed=16,JumpPower=50,Flying=false,Noclip=false,Inf
 local function getChar() return LP.Character or LP.CharacterAdded:Wait() end
 local function getHum() local c=getChar() return c:FindFirstChildOfClass("Humanoid") end
 local function getRoot() local c=getChar() return c:FindFirstChild("HumanoidRootPart") end
-local function conn(sig,fn) local c=sig:Connect(fn) table.insert(_G.OlemadAdminConns,c) return c end
+local function conn(sig,fn) local c=sig:Connect(fn) table.insert(_G.JinoxxAdminConns,c) return c end
 local LUCIDE pcall(function() LUCIDE=loadstring(game:HttpGet("https://raw.githubusercontent.com/latte-soft/lucide-roblox/master/lib/Icons.luau"))() end)
 local function lucide(parent,name,size,color) local img=Instance.new("ImageLabel") img.BackgroundTransparency=1 img.Size=UDim2.fromOffset(size,size) img.ImageColor3=color local set=LUCIDE and LUCIDE["48px"] and LUCIDE["48px"][name] if set then img.Image="rbxassetid://"..set[1] img.ImageRectSize=Vector2.new(set[2][1],set[2][2]) img.ImageRectOffset=Vector2.new(set[3][1],set[3][2]) end img.Parent=parent return img end
 conn(RunService.Stepped,function() if State.Noclip then local c=LP.Character if c then for _,p in ipairs(c:GetDescendants()) do if p:IsA("BasePart") and p.CanCollide then p.CanCollide=false end end end end end)
@@ -36,40 +36,63 @@ local function stopFling() State.Fling=false if flingConn then flingConn:Disconn
 local function tpTo(plr) local tc=plr.Character local troot=tc and tc:FindFirstChild("HumanoidRootPart") local root=getRoot() if troot and root then root.CFrame=troot.CFrame*CFrame.new(0,0,3) end end
 local function flingPlayer(plr) local tc=plr.Character local troot=tc and tc:FindFirstChild("HumanoidRootPart") local root=getRoot() local hum=getHum() if not(troot and root) then return end local old=root.CFrame local oldAR=hum and hum.AutoRotate if hum then hum.AutoRotate=false end task.spawn(function() for i=1,16 do local r=getRoot() if not r then break end r.CFrame=troot.CFrame r.AssemblyLinearVelocity=Vector3.new(10000,10000,10000) RunService.Heartbeat:Wait() end local r=getRoot() if r then r.AssemblyLinearVelocity=Vector3.zero r.CFrame=old end if hum then hum.AutoRotate=oldAR end end) end
 local function newDraw(t,props) local d=Drawing.new(t) for k,v in pairs(props) do d[k]=v end return d end
-local function getESP(plr) if _G.OlemadESP[plr] then return _G.OlemadESP[plr] end local o={} if HAS_DRAW then o.out=newDraw("Square",{Thickness=3,Filled=false,Color=Color3.new(0,0,0),Transparency=0.6}) o.box=newDraw("Square",{Thickness=1,Filled=false,Color=Color3.fromRGB(255,255,255)}) o.name=newDraw("Text",{Size=13,Center=true,Outline=true,Color=Color3.fromRGB(255,255,255),Font=2}) o.dist=newDraw("Text",{Size=12,Center=true,Outline=true,Color=Color3.fromRGB(190,190,200),Font=2}) o.tracer=newDraw("Line",{Thickness=1,Color=Color3.fromRGB(120,170,255)}) o.hpbg=newDraw("Square",{Thickness=1,Filled=true,Color=Color3.new(0,0,0),Transparency=0.6}) o.hp=newDraw("Square",{Thickness=1,Filled=true,Color=Color3.fromRGB(80,220,120)}) end _G.OlemadESP[plr]=o return o end
+local function getESP(plr) if _G.JinoxxESP[plr] then return _G.JinoxxESP[plr] end local o={} if HAS_DRAW then o.out=newDraw("Square",{Thickness=3,Filled=false,Color=Color3.new(0,0,0),Transparency=0.6}) o.box=newDraw("Square",{Thickness=1,Filled=false,Color=Color3.fromRGB(255,255,255)}) o.name=newDraw("Text",{Size=13,Center=true,Outline=true,Color=Color3.fromRGB(255,255,255),Font=2}) o.dist=newDraw("Text",{Size=12,Center=true,Outline=true,Color=Color3.fromRGB(190,190,200),Font=2}) o.tracer=newDraw("Line",{Thickness=1,Color=Color3.fromRGB(120,170,255)}) o.hpbg=newDraw("Square",{Thickness=1,Filled=true,Color=Color3.new(0,0,0),Transparency=0.6}) o.hp=newDraw("Square",{Thickness=1,Filled=true,Color=Color3.fromRGB(80,220,120)}) end _G.JinoxxESP[plr]=o return o end
 local function hideESP(o) for _,d in pairs(o) do d.Visible=false end end
-local function removeESP(plr) local o=_G.OlemadESP[plr] if o then for _,d in pairs(o) do pcall(function() d:Remove() end) end _G.OlemadESP[plr]=nil end end
+local function removeESP(plr) local o=_G.JinoxxESP[plr] if o then for _,d in pairs(o) do pcall(function() d:Remove() end) end _G.JinoxxESP[plr]=nil end end
 if HAS_DRAW then conn(RunService.RenderStepped,function() local cam=Workspace.CurrentCamera if not cam then return end for _,plr in ipairs(Players:GetPlayers()) do if plr~=LP then local o=getESP(plr) local char=plr.Character local hum=char and char:FindFirstChildOfClass("Humanoid") local root=char and char:FindFirstChild("HumanoidRootPart") local head=char and (char:FindFirstChild("Head") or root) if State.ESP and root and hum and head and hum.Health>0 and not(State.ESPTeam and plr.Team==LP.Team) then local tp,on=cam:WorldToViewportPoint(head.Position+Vector3.new(0,0.6,0)) local bp=cam:WorldToViewportPoint(root.Position-Vector3.new(0,3.2,0)) if on then local h=math.abs(bp.Y-tp.Y) local w=h*0.5 local x=tp.X-w/2 local y=tp.Y local col=(State.ESPTeam==false and plr.Team==LP.Team) and Color3.fromRGB(120,200,255) or Color3.fromRGB(255,255,255) o.box.Visible=State.ESPBoxes o.out.Visible=State.ESPBoxes o.box.Color=col o.box.Size=Vector2.new(w,h) o.box.Position=Vector2.new(x,y) o.out.Size=Vector2.new(w,h) o.out.Position=Vector2.new(x,y) o.name.Visible=State.ESPNames o.name.Text=plr.DisplayName o.name.Position=Vector2.new(tp.X,y-16) local dist=math.floor((cam.CFrame.Position-root.Position).Magnitude) o.dist.Visible=State.ESPNames o.dist.Text=dist.."m" o.dist.Position=Vector2.new(tp.X,y+h+2) o.tracer.Visible=State.ESPTracers o.tracer.From=Vector2.new(cam.ViewportSize.X/2,cam.ViewportSize.Y) o.tracer.To=Vector2.new(tp.X,y+h) if State.ESPHealth then local r=math.clamp(hum.Health/math.max(hum.MaxHealth,1),0,1) o.hpbg.Visible=true o.hp.Visible=true o.hpbg.Size=Vector2.new(3,h) o.hpbg.Position=Vector2.new(x-6,y) o.hp.Size=Vector2.new(3,h*r) o.hp.Position=Vector2.new(x-6,y+h*(1-r)) o.hp.Color=Color3.fromRGB(math.floor(255*(1-r)),math.floor(220*r+35),80) else o.hpbg.Visible=false o.hp.Visible=false end else hideESP(o) end else hideESP(o) end end end end) end
 conn(Players.PlayerRemoving,function(plr) removeESP(plr) end)
-local function loadTool(name,url) local ok,err=pcall(function() loadstring(game:HttpGet(url))() end) if ok then print("[Olemad] Loaded "..name) else warn("[Olemad] Failed "..name..": "..tostring(err)) end end
+local function loadTool(name,url) local ok,err=pcall(function() loadstring(game:HttpGet(url))() end) if ok then print("[Jinoxx] Loaded "..name) else warn("[Jinoxx] Failed "..name..": "..tostring(err)) end end
 
-local C={bg=Color3.fromRGB(17,17,20),header=Color3.fromRGB(23,23,27),colbg=Color3.fromRGB(24,24,29),border=Color3.fromRGB(44,44,51),hover=Color3.fromRGB(34,34,40),text=Color3.fromRGB(233,233,238),dim=Color3.fromRGB(150,150,160),faint=Color3.fromRGB(105,105,116),blue=Color3.fromRGB(72,130,248),red=Color3.fromRGB(220,80,90),trackOff=Color3.fromRGB(58,58,66),pill=Color3.fromRGB(33,33,40),pillBrd=Color3.fromRGB(54,54,62),knob=Color3.fromRGB(240,240,245)}
+-- ** NEW COLOR PALETTE (DARK PURPLE THEME) **
+local C={
+    bg=Color3.fromRGB(15, 12, 26),          -- خلفية الشاشة الرئيسية (بنفسجي داكن جداً)
+    header=Color3.fromRGB(22, 18, 36),      -- رأس القائمة
+    colbg=Color3.fromRGB(30, 24, 48),       -- خلفية الأعمدة
+    border=Color3.fromRGB(55, 45, 85),      -- لون الحدود
+    hover=Color3.fromRGB(45, 35, 70),       -- عند التمرير بالماوس
+    text=Color3.fromRGB(240, 240, 245),     -- لون النص الرئيسي
+    dim=Color3.fromRGB(170, 160, 190),      -- نص خافت
+    faint=Color3.fromRGB(120, 100, 140),    -- نص باهت جداً
+    blue=Color3.fromRGB(160, 70, 255),      -- لون الأزرار/الشرائح (بنفسجي ساطع)
+    red=Color3.fromRGB(220, 80, 90),
+    trackOff=Color3.fromRGB(50, 40, 70),
+    pill=Color3.fromRGB(40, 30, 55),
+    pillBrd=Color3.fromRGB(60, 45, 80),
+    knob=Color3.fromRGB(240, 240, 245)
+}
 local FONT=Enum.Font.Gotham local FONTM=Enum.Font.GothamMedium local FONTB=Enum.Font.GothamBold
 local COLW=208
-local gui=Instance.new("ScreenGui") gui.Name="OlemadAdmin" gui.ResetOnSpawn=false gui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling gui.IgnoreGuiInset=true gui.Parent=game:GetService("CoreGui")
+local gui=Instance.new("ScreenGui") gui.Name="JinoxxAdmin" gui.ResetOnSpawn=false gui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling gui.IgnoreGuiInset=true gui.Parent=game:GetService("CoreGui")
 local function corner(p,r) local u=Instance.new("UICorner") u.CornerRadius=UDim.new(0,r or 6) u.Parent=p return u end
 local function strokeOf(p,col,t) local s=Instance.new("UIStroke") s.Color=col or C.border s.Thickness=1 s.Transparency=t or 0 s.Parent=p return s end
 local WIN_W=COLW*4+10*3+24
-local main=Instance.new("Frame") main.Size=UDim2.fromOffset(WIN_W,0) main.AutomaticSize=Enum.AutomaticSize.Y main.Position=UDim2.new(0.5,-WIN_W/2,0,70) main.BackgroundColor3=C.bg main.BorderSizePixel=0 main.Active=true main.Draggable=true main.ClipsDescendants=false main.Parent=gui corner(main,12) strokeOf(main,C.border,0)
+-- ** MODIFIED FOR MOBILE **
+local main=Instance.new("Frame") 
+main.Size=UDim2.new(1, -40, 0, 0) -- يأخذ عرض الشاشة كاملاً مع ترك 20px يمين ويسار
+main.Position=UDim2.new(0.5, 0, 0.05, 0) -- في منتصف الشاشة للأعلى قليلاً
+main.AnchorPoint=Vector2.new(0.5,0)
+main.AutomaticSize=Enum.AutomaticSize.Y 
+main.BackgroundColor3=C.bg main.BorderSizePixel=0 main.Active=true main.Draggable=true main.ClipsDescendants=false main.Parent=gui 
+corner(main,12) strokeOf(main,C.border,0)
 local shadow=Instance.new("ImageLabel") shadow.BackgroundTransparency=1 shadow.Image="rbxassetid://6014261993" shadow.ImageColor3=Color3.new(0,0,0) shadow.ImageTransparency=0.35 shadow.ScaleType=Enum.ScaleType.Slice shadow.SliceCenter=Rect.new(49,49,450,450) shadow.Size=UDim2.new(1,70,1,70) shadow.Position=UDim2.fromOffset(-35,-35) shadow.ZIndex=0 shadow.Parent=main
-local header=Instance.new("Frame") header.Size=UDim2.new(1,0,0,44) header.BackgroundColor3=C.header header.BorderSizePixel=0 header.Parent=main corner(header,12)
+local header=Instance.new("Frame") header.Size=UDim2.new(1,0,0,50) header.BackgroundColor3=C.header header.BorderSizePixel=0 header.Parent=main corner(header,12)
 local hfix=Instance.new("Frame") hfix.Size=UDim2.new(1,0,0,14) hfix.Position=UDim2.new(0,0,1,-14) hfix.BackgroundColor3=C.header hfix.BorderSizePixel=0 hfix.Parent=header
 local hLine=Instance.new("Frame") hLine.Size=UDim2.new(1,0,0,1) hLine.Position=UDim2.new(0,0,1,0) hLine.BackgroundColor3=C.border hLine.BorderSizePixel=0 hLine.Parent=header
-local hIcon=lucide(header,"zap",16,C.blue) hIcon.Position=UDim2.fromOffset(16,14)
-local tlabel=Instance.new("TextLabel") tlabel.Size=UDim2.new(0.5,0,1,0) tlabel.Position=UDim2.fromOffset(40,0) tlabel.BackgroundTransparency=1 tlabel.Font=FONTB tlabel.Text="Olemad Admin" tlabel.TextColor3=C.text tlabel.TextSize=14 tlabel.TextXAlignment=Enum.TextXAlignment.Left tlabel.Parent=header
-local function hdrBtn(txt,xoff) local b=Instance.new("TextButton") b.Size=UDim2.fromOffset(26,26) b.Position=UDim2.new(1,xoff,0.5,-13) b.BackgroundColor3=C.hover b.BackgroundTransparency=1 b.Text=txt b.Font=FONTB b.TextSize=15 b.TextColor3=C.dim b.AutoButtonColor=false b.Parent=header corner(b,6) b.MouseEnter:Connect(function() b.BackgroundTransparency=0 b.TextColor3=C.text end) b.MouseLeave:Connect(function() b.BackgroundTransparency=1 b.TextColor3=C.dim end) return b end
-local closeBtn=hdrBtn("✕",-36) local minBtn=hdrBtn("—",-66)
-local body=Instance.new("Frame") body.Size=UDim2.new(1,0,0,0) body.AutomaticSize=Enum.AutomaticSize.Y body.Position=UDim2.fromOffset(0,44) body.BackgroundTransparency=1 body.Parent=main
-local bpad=Instance.new("UIPadding") bpad.PaddingTop=UDim.new(0,12) bpad.PaddingBottom=UDim.new(0,12) bpad.PaddingLeft=UDim.new(0,12) bpad.PaddingRight=UDim.new(0,12) bpad.Parent=body
-local rowL=Instance.new("UIListLayout") rowL.FillDirection=Enum.FillDirection.Horizontal rowL.Padding=UDim.new(0,10) rowL.SortOrder=Enum.SortOrder.LayoutOrder rowL.VerticalAlignment=Enum.VerticalAlignment.Top rowL.Parent=body
-local function column(order) local col=Instance.new("Frame") col.Size=UDim2.fromOffset(COLW,0) col.AutomaticSize=Enum.AutomaticSize.Y col.BackgroundColor3=C.colbg col.BorderSizePixel=0 col.LayoutOrder=order col.Parent=body corner(col,8) strokeOf(col,C.border,0.25) local p=Instance.new("UIPadding") p.PaddingTop=UDim.new(0,8) p.PaddingBottom=UDim.new(0,10) p.PaddingLeft=UDim.new(0,8) p.PaddingRight=UDim.new(0,8) p.Parent=col local l=Instance.new("UIListLayout") l.Padding=UDim.new(0,3) l.SortOrder=Enum.SortOrder.LayoutOrder l.Parent=col return col end
-local function section(parent,name,iconName,first) local w=Instance.new("Frame") w.Size=UDim2.new(1,0,0,first and 20 or 28) w.BackgroundTransparency=1 w.Parent=parent local xo=4 if iconName then local ic=lucide(w,iconName,14,C.faint) ic.Position=UDim2.new(0,3,1,-15) xo=22 end local l=Instance.new("TextLabel") l.Size=UDim2.new(1,-xo,0,14) l.Position=UDim2.new(0,xo,1,-14) l.BackgroundTransparency=1 l.Font=FONTB l.Text=string.upper(name) l.TextColor3=C.faint l.TextSize=11 l.TextXAlignment=Enum.TextXAlignment.Left l.Parent=w end
-local function rowbase(parent,t,h) local f=Instance.new("Frame") f.Size=UDim2.new(1,0,0,h or 34) f.BackgroundColor3=C.hover f.BackgroundTransparency=1 f.BorderSizePixel=0 f.Parent=parent corner(f,6) f.MouseEnter:Connect(function() TweenService:Create(f,TweenInfo.new(0.12),{BackgroundTransparency=0}):Play() end) f.MouseLeave:Connect(function() TweenService:Create(f,TweenInfo.new(0.12),{BackgroundTransparency=1}):Play() end) local lbl=Instance.new("TextLabel") lbl.Size=UDim2.new(1,-54,1,0) lbl.Position=UDim2.fromOffset(10,0) lbl.BackgroundTransparency=1 lbl.Font=FONTM lbl.Text=t lbl.TextColor3=C.text lbl.TextSize=13 lbl.TextXAlignment=Enum.TextXAlignment.Left lbl.TextTruncate=Enum.TextTruncate.AtEnd lbl.Parent=f return f,lbl end
-local function toggle(parent,name,default,cb) local f=rowbase(parent,name,34) local sw=Instance.new("TextButton") sw.Size=UDim2.fromOffset(34,18) sw.Position=UDim2.new(1,-42,0.5,-9) sw.BackgroundColor3=default and C.blue or C.trackOff sw.Text="" sw.AutoButtonColor=false sw.Parent=f corner(sw,9) local knob=Instance.new("Frame") knob.Size=UDim2.fromOffset(14,14) knob.Position=default and UDim2.new(1,-16,0.5,-7) or UDim2.new(0,2,0.5,-7) knob.BackgroundColor3=C.knob knob.BorderSizePixel=0 knob.Parent=sw corner(knob,7) local st=default sw.MouseButton1Click:Connect(function() st=not st TweenService:Create(sw,TweenInfo.new(0.15),{BackgroundColor3=st and C.blue or C.trackOff}):Play() TweenService:Create(knob,TweenInfo.new(0.15,Enum.EasingStyle.Quad),{Position=st and UDim2.new(1,-16,0.5,-7) or UDim2.new(0,2,0.5,-7)}):Play() cb(st) end) end
-local function slider(parent,name,min,max,default,cb) local f=rowbase(parent,"",46) local lbl=f:FindFirstChildOfClass("TextLabel") lbl.Size=UDim2.new(1,-20,0,18) lbl.Position=UDim2.fromOffset(10,7) lbl.TextColor3=C.dim lbl.Text=name local val=Instance.new("TextLabel") val.Size=UDim2.fromOffset(50,18) val.Position=UDim2.new(1,-58,0,7) val.BackgroundTransparency=1 val.Font=FONTB val.Text=tostring(default) val.TextColor3=C.text val.TextSize=13 val.TextXAlignment=Enum.TextXAlignment.Right val.Parent=f local bar=Instance.new("Frame") bar.Size=UDim2.new(1,-20,0,4) bar.Position=UDim2.fromOffset(10,30) bar.BackgroundColor3=C.trackOff bar.BorderSizePixel=0 bar.Parent=f corner(bar,2) local fill=Instance.new("Frame") fill.Size=UDim2.new((default-min)/(max-min),0,1,0) fill.BackgroundColor3=C.blue fill.BorderSizePixel=0 fill.Parent=bar corner(fill,2) local knob=Instance.new("Frame") knob.Size=UDim2.fromOffset(12,12) knob.AnchorPoint=Vector2.new(0.5,0.5) knob.Position=UDim2.new((default-min)/(max-min),0,0.5,0) knob.BackgroundColor3=C.knob knob.BorderSizePixel=0 knob.Parent=bar corner(knob,6) local drag=false local function setX(x) local rel=math.clamp((x-bar.AbsolutePosition.X)/bar.AbsoluteSize.X,0,1) local v=math.floor(min+(max-min)*rel+0.5) fill.Size=UDim2.new(rel,0,1,0) knob.Position=UDim2.new(rel,0,0.5,0) val.Text=tostring(v) cb(v) end bar.InputBegan:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then drag=true setX(i.Position.X) end end) knob.InputBegan:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then drag=true end end) conn(UIS.InputEnded,function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then drag=false end end) conn(UIS.InputChanged,function(i) if drag and (i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch) then setX(i.Position.X) end end) end
-local function pill(parent,name,iconName,cb) local b=Instance.new("TextButton") b.Size=UDim2.new(1,0,0,32) b.BackgroundColor3=C.pill b.Text="" b.AutoButtonColor=false b.Parent=parent corner(b,6) strokeOf(b,C.pillBrd,0) if iconName then local ic=lucide(b,iconName,14,C.dim) ic.Position=UDim2.new(0,12,0.5,-7) end local l=Instance.new("TextLabel") l.Size=UDim2.new(1,-40,1,0) l.Position=UDim2.fromOffset(iconName and 34 or 14,0) l.BackgroundTransparency=1 l.Font=FONTM l.Text=name l.TextColor3=C.text l.TextSize=12 l.TextXAlignment=Enum.TextXAlignment.Left l.Parent=b b.MouseEnter:Connect(function() TweenService:Create(b,TweenInfo.new(0.12),{BackgroundColor3=C.hover}):Play() end) b.MouseLeave:Connect(function() TweenService:Create(b,TweenInfo.new(0.12),{BackgroundColor3=C.pill}):Play() end) b.MouseButton1Click:Connect(cb) end
+local hIcon=lucide(header,"zap",16,C.blue) hIcon.Position=UDim2.fromOffset(16,17)
+local tlabel=Instance.new("TextLabel") tlabel.Size=UDim2.new(0.5,0,1,0) tlabel.Position=UDim2.fromOffset(40,0) tlabel.BackgroundTransparency=1 tlabel.Font=FONTB tlabel.Text="Jinoxx Admin" tlabel.TextColor3=C.text tlabel.TextSize=16 tlabel.TextXAlignment=Enum.TextXAlignment.Left tlabel.Parent=header
+local function hdrBtn(txt,xoff) local b=Instance.new("TextButton") b.Size=UDim2.fromOffset(34,34) b.Position=UDim2.new(1,xoff,0.5,-17) b.BackgroundColor3=C.hover b.BackgroundTransparency=1 b.Text=txt b.Font=FONTB b.TextSize=18 b.TextColor3=C.dim b.AutoButtonColor=false b.Parent=header corner(b,8) b.MouseEnter:Connect(function() b.BackgroundTransparency=0 b.TextColor3=C.text end) b.MouseLeave:Connect(function() b.BackgroundTransparency=1 b.TextColor3=C.dim end) return b end
+local closeBtn=hdrBtn("✕",-46) local minBtn=hdrBtn("—",-86)
+local body=Instance.new("Frame") body.Size=UDim2.new(1,0,0,0) body.AutomaticSize=Enum.AutomaticSize.Y body.Position=UDim2.fromOffset(0,50) body.BackgroundTransparency=1 body.Parent=main
+local bpad=Instance.new("UIPadding") bpad.PaddingTop=UDim.new(0,12) bpad.PaddingBottom=UDim.new(0,12) bpad.PaddingLeft=UDim.new(0,8) bpad.PaddingRight=UDim.new(0,8) bpad.Parent=body
+local rowL=Instance.new("UIListLayout") rowL.FillDirection=Enum.FillDirection.Horizontal rowL.Padding=UDim.new(0,6) rowL.SortOrder=Enum.SortOrder.LayoutOrder rowL.VerticalAlignment=Enum.VerticalAlignment.Top rowL.Parent=body
+local function column(order) local col=Instance.new("Frame") col.Size=UDim2.new(0, COLW, 0, 0) col.AutomaticSize=Enum.AutomaticSize.Y col.BackgroundColor3=C.colbg col.BorderSizePixel=0 col.LayoutOrder=order col.Parent=body corner(col,8) strokeOf(col,C.border,0.25) local p=Instance.new("UIPadding") p.PaddingTop=UDim.new(0,8) p.PaddingBottom=UDim.new(0,10) p.PaddingLeft=UDim.new(0,8) p.PaddingRight=UDim.new(0,8) p.Parent=col local l=Instance.new("UIListLayout") l.Padding=UDim.new(0,3) l.SortOrder=Enum.SortOrder.LayoutOrder l.Parent=col return col end
+local function section(parent,name,iconName,first) local w=Instance.new("Frame") w.Size=UDim2.new(1,0,0,first and 20 or 32) w.BackgroundTransparency=1 w.Parent=parent local xo=4 if iconName then local ic=lucide(w,iconName,14,C.faint) ic.Position=UDim2.new(0,3,1,-15) xo=22 end local l=Instance.new("TextLabel") l.Size=UDim2.new(1,-xo,0,14) l.Position=UDim2.new(0,xo,1,-14) l.BackgroundTransparency=1 l.Font=FONTB l.Text=string.upper(name) l.TextColor3=C.faint l.TextSize=11 l.TextXAlignment=Enum.TextXAlignment.Left l.Parent=w end
+local function rowbase(parent,t,h) local f=Instance.new("Frame") f.Size=UDim2.new(1,0,0,h or 38) f.BackgroundColor3=C.hover f.BackgroundTransparency=1 f.BorderSizePixel=0 f.Parent=parent corner(f,6) f.MouseEnter:Connect(function() TweenService:Create(f,TweenInfo.new(0.12),{BackgroundTransparency=0}):Play() end) f.MouseLeave:Connect(function() TweenService:Create(f,TweenInfo.new(0.12),{BackgroundTransparency=1}):Play() end) local lbl=Instance.new("TextLabel") lbl.Size=UDim2.new(1,-54,1,0) lbl.Position=UDim2.fromOffset(10,0) lbl.BackgroundTransparency=1 lbl.Font=FONTM lbl.Text=t lbl.TextColor3=C.text lbl.TextSize=14 lbl.TextXAlignment=Enum.TextXAlignment.Left lbl.TextTruncate=Enum.TextTruncate.AtEnd lbl.Parent=f return f,lbl end
+local function toggle(parent,name,default,cb) local f=rowbase(parent,name,38) local sw=Instance.new("TextButton") sw.Size=UDim2.fromOffset(40,22) sw.Position=UDim2.new(1,-46,0.5,-11) sw.BackgroundColor3=default and C.blue or C.trackOff sw.Text="" sw.AutoButtonColor=false sw.Parent=f corner(sw,11) local knob=Instance.new("Frame") knob.Size=UDim2.fromOffset(18,18) knob.Position=default and UDim2.new(1,-19,0.5,-9) or UDim2.new(0,2,0.5,-9) knob.BackgroundColor3=C.knob knob.BorderSizePixel=0 knob.Parent=sw corner(knob,9) local st=default sw.MouseButton1Click:Connect(function() st=not st TweenService:Create(sw,TweenInfo.new(0.15),{BackgroundColor3=st and C.blue or C.trackOff}):Play() TweenService:Create(knob,TweenInfo.new(0.15,Enum.EasingStyle.Quad),{Position=st and UDim2.new(1,-19,0.5,-9) or UDim2.new(0,2,0.5,-9)}):Play() cb(st) end) end
+local function slider(parent,name,min,max,default,cb) local f=rowbase(parent,"",50) local lbl=f:FindFirstChildOfClass("TextLabel") lbl.Size=UDim2.new(1,-20,0,20) lbl.Position=UDim2.fromOffset(10,6) lbl.TextColor3=C.dim lbl.Text=name local val=Instance.new("TextLabel") val.Size=UDim2.fromOffset(50,20) val.Position=UDim2.new(1,-58,0,6) val.BackgroundTransparency=1 val.Font=FONTB val.Text=tostring(default) val.TextColor3=C.text val.TextSize=15 val.TextXAlignment=Enum.TextXAlignment.Right val.Parent=f local bar=Instance.new("Frame") bar.Size=UDim2.new(1,-20,0,6) bar.Position=UDim2.fromOffset(10,32) bar.BackgroundColor3=C.trackOff bar.BorderSizePixel=0 bar.Parent=f corner(bar,3) local fill=Instance.new("Frame") fill.Size=UDim2.new((default-min)/(max-min),0,1,0) fill.BackgroundColor3=C.blue fill.BorderSizePixel=0 fill.Parent=bar corner(fill,3) local knob=Instance.new("Frame") knob.Size=UDim2.fromOffset(16,16) knob.AnchorPoint=Vector2.new(0.5,0.5) knob.Position=UDim2.new((default-min)/(max-min),0,0.5,0) knob.BackgroundColor3=C.knob knob.BorderSizePixel=0 knob.Parent=bar corner(knob,8) local drag=false local function setX(x) local rel=math.clamp((x-bar.AbsolutePosition.X)/bar.AbsoluteSize.X,0,1) local v=math.floor(min+(max-min)*rel+0.5) fill.Size=UDim2.new(rel,0,1,0) knob.Position=UDim2.new(rel,0,0.5,0) val.Text=tostring(v) cb(v) end bar.InputBegan:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then drag=true setX(i.Position.X) end end) knob.InputBegan:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then drag=true end end) conn(UIS.InputEnded,function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then drag=false end end) conn(UIS.InputChanged,function(i) if drag and (i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch) then setX(i.Position.X) end end) end
+local function pill(parent,name,iconName,cb) local b=Instance.new("TextButton") b.Size=UDim2.new(1,0,0,36) b.BackgroundColor3=C.pill b.Text="" b.AutoButtonColor=false b.Parent=parent corner(b,6) strokeOf(b,C.pillBrd,0) if iconName then local ic=lucide(b,iconName,14,C.dim) ic.Position=UDim2.new(0,12,0.5,-7) end local l=Instance.new("TextLabel") l.Size=UDim2.new(1,-40,1,0) l.Position=UDim2.fromOffset(iconName and 34 or 14,0) l.BackgroundTransparency=1 l.Font=FONTM l.Text=name l.TextColor3=C.text l.TextSize=13 l.TextXAlignment=Enum.TextXAlignment.Left l.Parent=b b.MouseEnter:Connect(function() TweenService:Create(b,TweenInfo.new(0.12),{BackgroundColor3=C.hover}):Play() end) b.MouseLeave:Connect(function() TweenService:Create(b,TweenInfo.new(0.12),{BackgroundColor3=C.pill}):Play() end) b.MouseButton1Click:Connect(cb) end
 
--- COLUMN 1: Aimbot + Camera
+-- COLUMN 1
 local c1=column(1)
 section(c1,"Aimbot"..(HAS_MOUSEMOVE and "" or " ⚠"),"crosshair",true)
 toggle(c1,"Aimbot enabled",false,function(o) State.Aimbot=o end)
@@ -81,7 +104,7 @@ slider(c1,"Smoothness",1,30,State.AimSmooth,function(v) State.AimSmooth=v end)
 section(c1,"Camera","camera")
 slider(c1,"Field of view",30,120,70,function(v) Workspace.CurrentCamera.FieldOfView=v end)
 
--- COLUMN 2: Movement + Combat
+-- COLUMN 2
 local c2=column(2)
 section(c2,"Movement","move",true)
 toggle(c2,"Fly",false,function(o) if o then startFly() else stopFly() end end)
@@ -94,7 +117,7 @@ section(c2,"Combat","swords")
 toggle(c2,"Anti-fling",false,function(o) State.AntiFling=o end)
 toggle(c2,"Fling (spin)",false,function(o) if o then startFling() else stopFling() end end)
 
--- COLUMN 3: Visuals (ESP) + Tools
+-- COLUMN 3
 local c3=column(3)
 section(c3,"Visuals"..(HAS_DRAW and "" or " ⚠"),"eye",true)
 toggle(c3,"ESP enabled",false,function(o) State.ESP=o end)
@@ -109,15 +132,15 @@ pill(c3,"Dex Explorer","folder-tree",function() loadTool("Dex","https://raw.gith
 pill(c3,"Simple Spy","radar",function() loadTool("SimpleSpy","https://raw.githubusercontent.com/78n/SimpleSpy/main/SimpleSpySource.lua") end)
 pill(c3,"Hydroxide","bug",function() loadTool("Hydroxide","https://raw.githubusercontent.com/Upbolt/Hydroxide/revision/init.lua") end)
 
--- COLUMN 4: Players + Utility
+-- COLUMN 4
 local c4=column(4)
 section(c4,"Players","users",true)
-local plistWrap=Instance.new("Frame") plistWrap.Size=UDim2.new(1,0,0,190) plistWrap.BackgroundColor3=C.bg plistWrap.BackgroundTransparency=0.4 plistWrap.BorderSizePixel=0 plistWrap.Parent=c4 corner(plistWrap,6)
+local plistWrap=Instance.new("Frame") plistWrap.Size=UDim2.new(1,0,0,200) plistWrap.BackgroundColor3=C.bg plistWrap.BackgroundTransparency=0.4 plistWrap.BorderSizePixel=0 plistWrap.Parent=c4 corner(plistWrap,6)
 local plist=Instance.new("ScrollingFrame") plist.Size=UDim2.new(1,-4,1,-4) plist.Position=UDim2.fromOffset(2,2) plist.BackgroundTransparency=1 plist.BorderSizePixel=0 plist.ScrollBarThickness=3 plist.ScrollBarImageColor3=C.border plist.CanvasSize=UDim2.new() plist.AutomaticCanvasSize=Enum.AutomaticSize.Y plist.Parent=plistWrap
 local pl=Instance.new("UIListLayout") pl.Padding=UDim.new(0,3) pl.SortOrder=Enum.SortOrder.Name pl.Parent=plist
 local pp=Instance.new("UIPadding") pp.PaddingTop=UDim.new(0,2) pp.PaddingLeft=UDim.new(0,2) pp.PaddingRight=UDim.new(0,2) pp.Parent=plist
-local function miniBtn(parent,txt,xoff,cb,col) local b=Instance.new("TextButton") b.Size=UDim2.fromOffset(30,22) b.Position=UDim2.new(1,xoff,0.5,-11) b.BackgroundColor3=col or C.pill b.Text=txt b.Font=FONTM b.TextSize=10 b.TextColor3=C.text b.AutoButtonColor=true b.Parent=parent corner(b,5) strokeOf(b,C.pillBrd,0.3) b.MouseButton1Click:Connect(cb) return b end
-local function refreshPlayers() for _,ch in ipairs(plist:GetChildren()) do if ch:IsA("Frame") then ch:Destroy() end end for _,plr in ipairs(Players:GetPlayers()) do if plr~=LP then local f=Instance.new("Frame") f.Name=plr.Name f.Size=UDim2.new(1,0,0,26) f.BackgroundColor3=C.hover f.BackgroundTransparency=1 f.BorderSizePixel=0 f.Parent=plist corner(f,5) f.MouseEnter:Connect(function() f.BackgroundTransparency=0 end) f.MouseLeave:Connect(function() f.BackgroundTransparency=1 end) local n=Instance.new("TextLabel") n.Size=UDim2.new(1,-70,1,0) n.Position=UDim2.fromOffset(8,0) n.BackgroundTransparency=1 n.Font=FONTM n.Text=plr.DisplayName n.TextColor3=C.text n.TextSize=12 n.TextXAlignment=Enum.TextXAlignment.Left n.TextTruncate=Enum.TextTruncate.AtEnd n.Parent=f miniBtn(f,"TP",-36,function() tpTo(plr) end) miniBtn(f,"Fling",-4,function() flingPlayer(plr) end,C.red) end end end
+local function miniBtn(parent,txt,xoff,cb,col) local b=Instance.new("TextButton") b.Size=UDim2.fromOffset(36,26) b.Position=UDim2.new(1,xoff,0.5,-13) b.BackgroundColor3=col or C.pill b.Text=txt b.Font=FONTM b.TextSize=11 b.TextColor3=C.text b.AutoButtonColor=true b.Parent=parent corner(b,5) strokeOf(b,C.pillBrd,0.3) b.MouseButton1Click:Connect(cb) return b end
+local function refreshPlayers() for _,ch in ipairs(plist:GetChildren()) do if ch:IsA("Frame") then ch:Destroy() end end for _,plr in ipairs(Players:GetPlayers()) do if plr~=LP then local f=Instance.new("Frame") f.Name=plr.Name f.Size=UDim2.new(1,0,0,30) f.BackgroundColor3=C.hover f.BackgroundTransparency=1 f.BorderSizePixel=0 f.Parent=plist corner(f,5) f.MouseEnter:Connect(function() f.BackgroundTransparency=0 end) f.MouseLeave:Connect(function() f.BackgroundTransparency=1 end) local n=Instance.new("TextLabel") n.Size=UDim2.new(1,-84,1,0) n.Position=UDim2.fromOffset(8,0) n.BackgroundTransparency=1 n.Font=FONTM n.Text=plr.DisplayName n.TextColor3=C.text n.TextSize=13 n.TextXAlignment=Enum.TextXAlignment.Left n.TextTruncate=Enum.TextTruncate.AtEnd n.Parent=f miniBtn(f,"TP",-44,function() tpTo(plr) end) miniBtn(f,"Fling",-4,function() flingPlayer(plr) end,C.red) end end end
 refreshPlayers()
 conn(Players.PlayerAdded,function() task.wait(0.3) refreshPlayers() end)
 conn(Players.PlayerRemoving,function() task.wait(0.1) refreshPlayers() end)
@@ -126,13 +149,30 @@ pill(c4,"Teleport to Spawn","flag",function() local root=getRoot() local sp=Work
 pill(c4,"Reset Character","rotate-ccw",function() local h=getHum() if h then h.Health=0 end end)
 pill(c4,"Rejoin Server","refresh-cw",function() TeleportService:Teleport(game.PlaceId,LP) end)
 
--- Equalize column heights + size window exactly (no clipping / dead-space)
+-- ** FIX SIZE FOR MOBILE **
 local cols={c1,c2,c3,c4}
-task.spawn(function() for _=1,4 do RunService.Heartbeat:Wait() end local maxH=0 for _,col in ipairs(cols) do maxH=math.max(maxH,col.AbsoluteSize.Y) end for _,col in ipairs(cols) do col.AutomaticSize=Enum.AutomaticSize.None col.Size=UDim2.fromOffset(COLW,maxH) end main.AutomaticSize=Enum.AutomaticSize.None body.AutomaticSize=Enum.AutomaticSize.None body.Size=UDim2.new(1,0,0,maxH+24) main.Size=UDim2.fromOffset(WIN_W,44+maxH+24) end)
+task.spawn(function() for _=1,4 do RunService.Heartbeat:Wait() end local maxH=0 for _,col in ipairs(cols) do maxH=math.max(maxH,col.AbsoluteSize.Y) end for _,col in ipairs(cols) do col.AutomaticSize=Enum.AutomaticSize.None col.Size=UDim2.fromOffset(COLW,maxH) end main.AutomaticSize=Enum.AutomaticSize.None body.AutomaticSize=Enum.AutomaticSize.None body.Size=UDim2.new(1,0,0,maxH+24) main.Size=UDim2.new(1, -40, 0, 44+maxH+24) end)
 
-local function cleanup() stopFly() State.Noclip=false State.Aimbot=false State.ESP=false stopFling() for plr,_ in pairs(_G.OlemadESP) do removeESP(plr) end end
+local function cleanup() stopFly() State.Noclip=false State.Aimbot=false State.ESP=false stopFling() for plr,_ in pairs(_G.JinoxxESP) do removeESP(plr) end end
 local minimized=false
 minBtn.MouseButton1Click:Connect(function() minimized=not minimized body.Visible=not minimized end)
 closeBtn.MouseButton1Click:Connect(function() cleanup() gui:Destroy() end)
-conn(UIS.InputBegan,function(i,gp) if gp then return end if i.KeyCode==Enum.KeyCode.RightShift then main.Visible=not main.Visible end end)
-print("[Olemad] v5.0 loaded | Lucide:"..tostring(LUCIDE~=nil).." Drawing:"..tostring(HAS_DRAW).." mousemove:"..tostring(HAS_MOUSEMOVE))
+
+-- ** MOBILE TOGGLE: Menu Button (≡) in top left **
+local toggleBtn = Instance.new("TextButton")
+toggleBtn.Size = UDim2.new(0, 50, 0, 50)
+toggleBtn.Position = UDim2.new(0, 10, 0, 10)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(20, 18, 35)
+toggleBtn.Text = "☰"
+toggleBtn.TextColor3 = Color3.fromRGB(240, 240, 245)
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.TextSize = 24
+toggleBtn.Parent = gui
+corner(toggleBtn, 25)
+strokeOf(toggleBtn, Color3.fromRGB(55, 45, 85))
+
+toggleBtn.MouseButton1Click:Connect(function()
+    main.Visible = not main.Visible
+end)
+
+print("[Jinoxx] Mobile/Purple loaded | Lucide:"..tostring(LUCIDE~=nil).." Drawing:"..tostring(HAS_DRAW).." mousemove:"..tostring(HAS_MOUSEMOVE))
